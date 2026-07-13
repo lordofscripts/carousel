@@ -12,15 +12,17 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"lordofscripts/carousel"
-	"lordofscripts/carousel/app"
 	"os"
 	"path"
 	"sort"
 	"strings"
 	"time"
 
+	"github.com/lordofscripts/carousel"
+
 	"github.com/adhocore/gronx"
+	"github.com/lordofscripts/goapp"
+	"github.com/lordofscripts/goapp/app"
 )
 
 /* ----------------------------------------------------------------
@@ -233,12 +235,19 @@ func CronTask(settings *carousel.Settings, tellNext bool) error {
 }
 
 func Version() {
-	carousel.Copyright(carousel.CO1, true)
-	carousel.BuyMeCoffee("lostinwriting")
+	carousel.ModuleVersion.Copyright(carousel.Reverse(carousel.CO1), carousel.CHR_TRIDENT)
+	fmt.Println("\t\t\t", carousel.Logo())
+
+	fmt.Println("\tFeaturing:")
+	fmt.Printf("\t\t%c %s\n", carousel.CHR_HONEYBEE, goapp.ModuleVersion.String())
+
+	carousel.ModuleVersion.BuyMeCoffee(carousel.Reverse(carousel.CO3))
 }
 
+// Help information displayed when there is a flag parsing error or when
+// the -help flag is given.
 func Help() {
-	carousel.Copyright(carousel.CO1, true)
+	carousel.ModuleVersion.Copyright(carousel.CO1, carousel.CHR_TRIDENT)
 
 	const NAME = "\tgoCarousel "
 	fmt.Println("Usage:\t\t\t(Environment)")
@@ -259,7 +268,7 @@ func Help() {
 	fmt.Println(NAME, "-daemon MINUTES")
 	//flag.PrintDefaults()
 
-	carousel.BuyMeCoffee("lostinwriting")
+	carousel.ModuleVersion.BuyMeCoffee(carousel.Reverse(carousel.CO3))
 }
 
 /* ----------------------------------------------------------------
@@ -293,6 +302,7 @@ func main() {
 	flag.StringVar(&filename, "F", "", "Select this wallpaper")
 	flag.StringVar(&group, "G", "", "Select this caroussel group")
 	flag.StringVar(&group, "carousel", "", "Select this caroussel group")
+	flag.Usage = Help
 	flag.Parse()
 
 	// ============= CLI PROCESS ===============

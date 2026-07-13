@@ -11,8 +11,9 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"lordofscripts/carousel"
 	"time"
+
+	"github.com/lordofscripts/carousel"
 
 	"github.com/adhocore/gronx/pkg/tasker"
 )

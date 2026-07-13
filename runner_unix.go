@@ -15,7 +15,7 @@ import (
 	"os"
 	"strings"
 
-	"lordofscripts/carousel/app"
+	"github.com/lordofscripts/goapp/app"
 )
 
 /* ----------------------------------------------------------------

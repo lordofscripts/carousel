@@ -16,7 +16,7 @@ import (
 	"log"
 	"strings"
 
-	"lordofscripts/carousel/app"
+	"github.com/lordofscripts/goapp/app"
 )
 
 /* ----------------------------------------------------------------

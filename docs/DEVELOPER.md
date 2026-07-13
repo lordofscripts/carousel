@@ -113,3 +113,9 @@ First compile the `goUnixStyle` utility in this package:
 Then run it (it is NOT recursive): `goUnixStyle *` it will print the names
 of all files with offending (CRLF) line endings. If you also want it to
 tell you which files are OK (LF) add the `-ok` command-line flag.
+
+## Build Notes
+
+* As of `v1.1.0-RC.1` the `app` package is deprecated. Moved to 
+  the [GoApp](https://github.com/lordofscripts/goapp) module.
+  **Do not add anything to this local package**
