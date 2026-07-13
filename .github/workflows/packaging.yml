@@ -41,7 +41,7 @@ jobs:
       my_version: ${{ steps.tagStep.outputs.my_version }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4    
+        uses: actions/checkout@v6  
       - name: Extract version from version.go
         id: tagStep
         run: echo "my_version=$(make version)" >> $GITHUB_OUTPUT
@@ -60,7 +60,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Go
         uses: actions/setup-go@v5
@@ -96,7 +96,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Replace version in RPM spec so correct source is downloaded when building RPM
         run: sed -Ei "s/(^Version:[[:space:]]*).*/\1${{ needs.extractTag.outputs.my_version }}/" distrib/Fedora/${{ env.PKG_NAME }}.spec
