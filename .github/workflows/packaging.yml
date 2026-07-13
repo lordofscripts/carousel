@@ -1,0 +1,197 @@
+# DEB & RPM Build & Packaging of GO project v1.1
+# https://github.com/orgs/community/discussions/180854
+
+name: Debian and RPM Packaging
+
+on:
+  workflow_run:
+    workflows: [Multi platform Release]
+    types:
+      - completed
+
+permissions:
+  contents: write
+  pull-requests: read
+
+env:
+  DIST: clys
+  ARCH: x86_64
+  PKG_NAME: carousel
+
+jobs:
+  success:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - run: echo 'The Release workflow completed successfully.'
+  failure:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    steps:
+      - run: echo 'The Release workflow failed.'
+  exit:
+    needs: failure
+    runs-on: ubuntu-latest
+    steps:
+      - run: exit 1
+
+  extractTag:
+    runs-on: ubuntu-latest
+    outputs:
+      my_version: ${{ steps.tagStep.outputs.my_version }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4    
+      - name: Extract version from version.go
+        id: tagStep
+        run: echo "my_version=$(make version)" >> $GITHUB_OUTPUT
+#        run: echo "my_version=$(grep -m 1 'MANUAL_VERSION' version.go | sed -E 's/.*\"([^\"]+)\".*/\1/')" >> $GITHUB_OUTPUT
+
+  use-tag:
+    needs: extractTag
+    runs-on: ubuntu-latest
+    steps:
+      - name: Use the tag name
+        run: echo "The tag name is ${{ needs.extractTag.outputs.my_version }}"
+
+  build_tarball:
+    name: Build source archive
+    needs: extractTag
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.25'
+
+      - name: Install dependencies
+        run: |
+          go get .
+
+      - name: Build
+        run: go build -v ./...        
+
+      - name: Debug Info
+        run: |
+          echo "Current directory: $(pwd)"
+          echo "Environment variables: $(printenv)"
+          echo "Tag Name: $(TAG_NAME) or ${{ needs.extractTag.outputs.my_version }}"
+          go version
+
+# - name: Create source archive
+#   run: tar -cvf ${{ env.PKG_NAME }}-${{ github.ref_name }}.tar.gz *
+
+# - name: Upload source archive as artifact
+#   uses: actions/upload-artifact@v4
+#   with:
+#     name: ${{ env.PKG_NAME }}-${{ github.ref_name }}.tar.gz
+#     path: ${{ env.PKG_NAME }}-${{ github.ref_name }}.tar.gz
+
+  build_rpm:
+    name: Build .rpm package
+    needs: [build_tarball, extractTag]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Replace version in RPM spec so correct source is downloaded when building RPM
+        run: sed -Ei "s/(^Version:[[:space:]]*).*/\1${{ needs.extractTag.outputs.my_version }}/" distrib/Fedora/${{ env.PKG_NAME }}.spec
+
+      - name: Run rpmbuild on RPM spec to produce package
+        id: rpm
+        uses: naveenrajm7/rpmbuild@master
+        with:
+          spec_file: distrib/Fedora/${{ env.PKG_NAME }}.spec
+
+      - name: Get Latest Release
+        id: get_release
+        run: |
+          RELEASE_JSON=$(gh release list --repo ${{ github.repository }} --limit 1 --json name,id)
+          echo "release_name=$(echo $RELEASE_JSON | jq -r '.[0].name')" >> $GITHUB_OUTPUT
+          echo "release_id=$(echo $RELEASE_JSON | jq -r '.[0].id')" >> $GITHUB_OUTPUT
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload .rpm package as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.PKG_NAME }}-${{ needs.extractTag.outputs.my_version }}-1.${{ env.DIST }}.${{ env.ARCH }}.rpm
+          path: rpmbuild/RPMS/${{ env.ARCH }}/*.rpm
+
+      - name: Attach to Existing Release
+        uses: softprops/action-gh-release@v2
+        #if: github.ref_type == 'tag'
+        with:
+          release_id: ${{ steps.get_release.outputs.release_id }}
+          files: rpmbuild/RPMS/${{ env.ARCH }}/*.rpm
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build_deb:
+    name: Build .deb package
+    needs: [build_rpm, extractTag]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download .rpm artifact
+        uses: actions/download-artifact@v4
+        id: download
+        with:
+          name: ${{ env.PKG_NAME }}-${{ needs.extractTag.outputs.my_version }}-1.${{ env.DIST }}.${{ env.ARCH }}.rpm
+
+      - name: find .
+        run: find .
+
+      - name: Convert .rpm to .deb
+        run: |
+          sudo apt install -y alien
+          sudo alien -k --verbose --to-deb *.rpm
+
+      - name: find .
+        run: find . -exec readlink -f {} \;
+
+      - name: Get Latest Release
+        id: get_release
+        run: |
+          RELEASE_JSON=$(gh release list --repo ${{ github.repository }} --limit 1 --json name,id)
+          echo "release_name=$(echo $RELEASE_JSON | jq -r '.[0].name')" >> $GITHUB_OUTPUT
+          echo "release_id=$(echo $RELEASE_JSON | jq -r '.[0].id')" >> $GITHUB_OUTPUT
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload .deb package as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.PKG_NAME }}-${{ needs.extractTag.outputs.my_version }}-1.${{ env.DIST }}.${{ env.ARCH }}.deb
+          path: ${{ env.PKG_NAME }}*.deb
+
+      - name: Attach to Existing Release
+        uses: softprops/action-gh-release@v2
+        #if: github.ref_type == 'tag'
+        with:
+          release_id: ${{ steps.get_release.outputs.release_id }}
+          files: rpmbuild/RPMS/${{ env.ARCH }}/*.rpm
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+# release:
+#   name: Create release with all assets
+#   needs: [build_tarball, build_rpm, build_deb]
+#   runs-on: ubuntu-latest
+#   steps:
+#     - name: Download .rpm artifact
+#       uses: actions/download-artifact@v4
+
+#     - name: find .
+#       run: find .
+
+#     - name: Release
+#       uses: softprops/action-gh-release@v1
+#       with:
+#         files: |
+#           ${{ env.PKG_NAME }}-${{ github.ref_name }}.tar.gz/*.tar.gz
+#           ${{ env.PKG_NAME }}-${{ github.ref_name }}-1.${{ env.DIST }}.${{ env.ARCH }}.rpm/**/*.rpm
+#           ${{ env.PKG_NAME }}-${{ github.ref_name }}-1.${{ env.DIST }}.${{ env.ARCH }}.deb/**/*.deb

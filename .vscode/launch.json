@@ -23,6 +23,15 @@
             "args": ["-verify"]
         },
         {
+            "name": "Launch Ident",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "buildFlags": "-tags 'logx'",
+            "program": "${fileDirname}", // or ${workspaceFolder}
+            "args": ["-ident"]
+        },        
+        {
             "name": "Launch Lock",
             "type": "go",
             "request": "launch",

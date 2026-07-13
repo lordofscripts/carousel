@@ -1,3 +1,18 @@
+go-carousel (1.1.0-RC.1) UNRELEASED; urgency=low
+
+* Fixed #GHB-010 It was no longer recognizing Destkop Sessions after Linux updates
+* Closed #GHB-011 Improved notification by using different icons
+* Closed #GHB-012 Migration to external GoApp module. Renamed module.
+
+ -- Lord of Scripts <lordofscripts@users.noreply.github.com>  Thu, 13 Jul 2025 13:19:00 -0500
+
+go-carousel (1.0.1) UNRELEASED; urgency=low
+
+* Recognize Gnome with X11 (Xorg) display manager (not only Wayland)
+* Added Lock/Unlock icons to notification
+
+ -- Lord of Scripts <lordofscripts@users.noreply.github.com>  Thu, 28 Aug 2025 13:45:00 -0500
+
 go-carousel (1.0.0) UNRELEASED; urgency=low
 
   * Fixes #GHB-008 Notification icons not displayed when passes as file, only as binary.
