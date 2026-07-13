@@ -85,6 +85,11 @@ func NotifyAlert(body, iconPath string) error {
 	return err
 }
 
+func NotifyAlertWithData(body string, iconData []byte) error {
+	err := beeep.Alert(NAME, body, iconData)
+	return err
+}
+
 func NotifySound() error {
 	err := beeep.Beep(beeep.DefaultFreq, beeep.DefaultDuration)
 	return err

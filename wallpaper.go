@@ -9,6 +9,7 @@ package carousel
 
 import (
 	"crypto/rand"
+	_ "embed"
 	"fmt"
 	"log"
 	"math/big"
@@ -26,8 +27,10 @@ const (
 
 	DEFAULT_ICON_FILE = ".category_icon.png"
 	DEFAULT_AUTH_FILE = "goCarousel.png"
-	DEFAULT_ICON      = "/home/lordofscripts/Pictures/Wallpapers/.category_icon.png" // 100x100 @audit
 )
+
+//go:embed docs/assets/default_category_icon.png
+var altDefaultIconData []byte
 
 /* ----------------------------------------------------------------
  *				I n t e r f a c e s
@@ -148,7 +151,7 @@ func (w *WallpaperManager) SetWallpaperFromCategory(chosenCategory string) error
 				log.Printf("authorization denied on %s", category.KeyName)
 				if w.settings.UserOptions.Notify {
 					NotifySound()
-					NotifyAlert("Authorization denied", DEFAULT_ICON)
+					NotifyAlertWithData("Authorization denied", altDefaultIconData)
 				}
 
 				return NewWarningMsg(WarnAuthorizationDenied, "Authorization Denied")
