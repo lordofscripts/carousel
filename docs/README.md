@@ -1,14 +1,15 @@
 # Go Carousel
 
-A desktop wallpaper carousel for Linux & Windows desktops. Schedule your favorite 
-wallpapers with ease and work with enjoyment (almost) regardless of your
-desktop manager.
-
 [![Latest Version](https://img.shields.io/github/release/lordofscripts/go-carousel.svg?style=flat-square)](https://github.com/lordofscripts/go-carousel/releases)
 [![Go Report](https://goreportcard.com/badge/github.com/lordofscripts/go-carousel)](https://goreportcard.com/report/github.com/lordofscripts/go-carousel)
 [![Codecov](https://img.shields.io/codecov/c/github/lordofscripts/go-carousel/main.svg?style=flat-square)](https://codecov.io/gh/lordofscripts/go-carousel)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Support](https://img.shields.io/static/v1?label=Support&message=%E2%9D%A4&logo=GitHub)](https://github.com/sponsors/lordofscripts)
 [![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=Scheduled+Desktop+Wallpaper+Carousel&url=https://github.com/lordofscripts/go-carousel&hashtags=go,golang)
+
+A desktop wallpaper carousel for Linux & Windows desktops. Schedule your favorite 
+wallpapers with ease and work with enjoyment (almost) regardless of your
+desktop manager.
 
 <p align="center" width="100%">
     <img width="33%" src="./assets/gopher-carousel-680.png">
@@ -28,7 +29,7 @@ Supported Window Managers:
 - Cinnamon
 - XFCE v4
 - LXDE
-- Micro$osf Windows
+- Micro$oft Windows
 
 You can automate it further by:
 
