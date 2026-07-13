@@ -91,7 +91,7 @@ func (e *AppErrorBase[T]) Error() string {
 	if p := strings.Index(t, "."); p != -1 {
 		t = t[p:]
 	}
-	return fmt.Sprintf("(%s) #E%03d %s\n\t%s %s", t, e.errnum, e.errnum, e.location, e.message)
+	return fmt.Sprintf("(%s) #E%03d\n\t%s %s", t, e.errnum, e.location, e.message)
 }
 
 /**
