@@ -13,6 +13,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 )
 
 /* ----------------------------------------------------------------
@@ -29,18 +30,20 @@ import (
  */
 func (w *WallpaperManager) Init() error {
 	if name, err := w.getSessionManager(); err == nil {
-		switch name {
-		case FLAVOR_GNOME:
+		switch {
+		case strings.EqualFold(name, FLAVOR_GNOME_X11):
+			fallthrough
+		case strings.EqualFold(name, FLAVOR_GNOME):
 			w.sessionHandler = newGnomeHandler()
 
-		case FLAVOR_CINNAMON:
+		case strings.EqualFold(name, FLAVOR_CINNAMON):
 			w.sessionHandler = newGnomeHandler()
 			w.sessionHandler.WithFlavor(FLAVOR_CINNAMON)
 
-		case FLAVOR_LXDE:
+		case strings.EqualFold(name, FLAVOR_LXDE):
 			w.sessionHandler = newLxdeHandler()
 
-		case FLAVOR_XFCE4:
+		case strings.EqualFold(name, FLAVOR_XFCE4):
 			w.sessionHandler = newXfceHandler()
 
 		default:

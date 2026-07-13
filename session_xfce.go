@@ -22,6 +22,10 @@ const (
 	FLAVOR_XFCE4 = "xfce"
 
 	EXT_XFQUERY = "/usr/bin/xfconf-query" // @todo get from JSON config
+
+	// Prior to XFCE 4.20
+	//_XFCE_WALLPAPER_PROPERTY string = "/backdrop/screen0/monitor0/image-path"
+	_XFCE_WALLPAPER_PROPERTY string = "/backdrop/screen0/monitorHDMI-1/workspace0/last-image"
 )
 
 /* ----------------------------------------------------------------
@@ -106,7 +110,7 @@ func (s *XfceSession) SetWallpaperDark(filename string) error {
 		"--channel", // -c
 		"xfce4-desktop",
 		"--property", // -p
-		"/backdrop/screen0/monitor0/image-path",
+		_XFCE_WALLPAPER_PROPERTY,
 		"--set",
 		filename,
 	)
@@ -120,7 +124,7 @@ func (s *XfceSession) SetWallpaperLight(filename string) error {
 		"--channel", // -c
 		"xfce4-desktop",
 		"--property", // -p
-		"/backdrop/screen0/monitor0/image-path",
+		_XFCE_WALLPAPER_PROPERTY,
 		"--set",
 		filename,
 	)

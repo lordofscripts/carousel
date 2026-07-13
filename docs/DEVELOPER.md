@@ -21,9 +21,10 @@ which external application and parameters to use to accomplish the task. As you
 know, modern session managers use communication channels to work with their
 configuration rather than directly changing configuration files.
 
-*Go Carousel* uses the `GDMSESSION` environment variable to determine which
+*Go Carousel* uses the `XDG_SESSION_DESKTOP` environment variable to determine which
 session handler to use (Gnome, XFCE). There are built-in handlers for each of
-the supported session managers.
+the supported session managers. `XDG_SESSION` nowadays returns either `x11` or
+`wayland`.
 
 ### Gnome Sessions
 
@@ -68,6 +69,22 @@ built-in handler uses the presence of the word "dark" to detect the *Dark* varia
 
 `xfconf-query -c xfce4-desktop -p /backdrop/screen0/monitor0/color-style` shows us the
 current color scheme. In my case it returns `1`
+
+Lately on my dual-monitor:
+
+External HDMI monitor:
+
+`xfconf-query -c xfce4-desktop -p /backdrop/screen0/monitorHDMI-1/workspace0/last-image -s /path/to/image.jpg`
+
+Laptop's monitor:
+
+`xfconf-query -c xfce4-desktop -p /backdrop/screen0/monitorLVDS-1/workspace0/last-image -s /path/to/image.jpg`
+
+Query:
+
+`xfconf-query -c xfce4-desktop -p /backdrop/screen0/monitorHDMI-1/workspace0/last-image`
+
+Returns `/usr/share/images/desktop-base/default`
 
 ## Maintenance
 

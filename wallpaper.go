@@ -22,7 +22,7 @@ import (
  *-----------------------------------------------------------------*/
 
 const (
-	ENV_SESSION = "GDMSESSION" // to determine whether it is Gnome, XFCE, etc.
+	ENV_SESSION = "XDG_SESSION_DESKTOP" // to determine whether it is Gnome, XFCE, etc.
 
 	DEFAULT_ICON_FILE = ".category_icon.png"
 	DEFAULT_AUTH_FILE = "goCarousel.png"

@@ -24,8 +24,9 @@ import (
  *-----------------------------------------------------------------*/
 
 const (
-	FLAVOR_GNOME    = "gnome"
-	FLAVOR_CINNAMON = "cinnamon"
+	FLAVOR_GNOME     = "gnome"
+	FLAVOR_GNOME_X11 = "gnome-xorg"
+	FLAVOR_CINNAMON  = "cinnamon"
 
 	EXT_GSETTINGS = "/usr/bin/gsettings" // @todo get from JSON config
 
