@@ -23,6 +23,15 @@ const ()
 //go:embed docs/assets/goCarousel.png
 var defaultIconData []byte
 
+//go:embed docs/assets/goPadlockRed.png
+var lockedIconData []byte
+
+//go:embed docs/assets/goPadlockGreen.png
+var unlockedIconData []byte
+
+//go:embed docs/assets/warning.png
+var warningIconData []byte
+
 /* ----------------------------------------------------------------
  *				I n t e r f a c e s
  *-----------------------------------------------------------------*/

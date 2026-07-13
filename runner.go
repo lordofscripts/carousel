@@ -112,7 +112,7 @@ func LockCarousel(settings *Settings) error {
 	if fdOut, err = os.Create(getLockFile(settings)); err == nil {
 		_, err = fdOut.WriteString(time.Now().String())
 		if err == nil {
-			beeep.Notify("Beware", "Wallpapers locked", defaultIconData)
+			beeep.Notify("Beware", "Wallpapers locked", lockedIconData)
 		}
 	} else {
 		beeep.Alert("Beware", "Could not lock carousel", defaultIconData)
@@ -134,7 +134,7 @@ func UnlockCarousel(settings *Settings) error {
 		beeep.Alert("Beware", "Could not unlock carousel", defaultIconData)
 		log.Print(err)
 	} else {
-		beeep.Notify("Just to let you know", "Wallpapers unlocked", defaultIconData)
+		beeep.Notify("Just to let you know", "Wallpapers unlocked", unlockedIconData)
 	}
 
 	return err
