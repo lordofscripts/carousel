@@ -86,7 +86,7 @@
       "cron_tab": "00 13 * * 1-5"
     },
     {
-      "title": "Toe Time",
+      "title": "Anime Time",
       "action": "ActChosenCategory",
       "argument": "Anime",
       "cron_tab": "*/10 8-12 * * 1-5"
