@@ -14,13 +14,13 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"os"
 	"os/exec"
 	"strings"
 	"time"
 
 	"github.com/gen2brain/beeep"
+	"github.com/lordofscripts/goapp/app/logx"
 )
 
 /* ----------------------------------------------------------------
@@ -69,7 +69,7 @@ func ExecuteProgram(programPath string, args ...string) (string, error) {
 	// Run the command
 	err := cmd.Run()
 	if err != nil && cmd.ProcessState.ExitCode() == 2 {
-		log.Printf("Error: %d %s", cmd.ProcessState.ExitCode(), err)
+		logx.Printf("Error: %d %s", cmd.ProcessState.ExitCode(), err)
 		return "", err
 	}
 
@@ -107,6 +107,9 @@ func CalculateMD5(filePath string) (string, error) {
  * Apply the lock to prevent changing the wallpaper via this application
  */
 func LockCarousel(settings *Settings) error {
+	logx.Enter()
+	defer logx.Leave()
+
 	var err error
 	var fdOut *os.File
 	if fdOut, err = os.Create(getLockFile(settings)); err == nil {
@@ -116,7 +119,7 @@ func LockCarousel(settings *Settings) error {
 		}
 	} else {
 		beeep.Alert("Beware", "Could not lock carousel", defaultIconData)
-		log.Print(err)
+		logx.Print(err)
 	}
 
 	if fdOut != nil {
@@ -129,10 +132,13 @@ func LockCarousel(settings *Settings) error {
  * Remove the lock, thus allowing changing the wallpaper
  */
 func UnlockCarousel(settings *Settings) error {
+	logx.Enter()
+	defer logx.Leave()
+
 	var err error
 	if err = os.Remove(getLockFile(settings)); err != nil {
 		beeep.Alert("Beware", "Could not unlock carousel", defaultIconData)
-		log.Print(err)
+		logx.Print(err)
 	} else {
 		beeep.Notify("Just to let you know", "Wallpapers unlocked", unlockedIconData)
 	}

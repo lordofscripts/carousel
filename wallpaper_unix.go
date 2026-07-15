@@ -11,9 +11,10 @@ package carousel
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"strings"
+
+	"github.com/lordofscripts/goapp/app/logx"
 )
 
 /* ----------------------------------------------------------------
@@ -96,16 +97,16 @@ func (w *WallpaperManager) exportSessionBusAddress() error {
 	dBusSessionAddress := fmt.Sprintf("unix:path=/run/user/%d/bus", userId)
 	err := os.Setenv("DBUS_SESSION_BUS_ADDRESS", dBusSessionAddress)
 	if err != nil {
-		log.Print("Unable to set DBUS_SESSION_BUS_ADDRESS")
+		logx.Print("Unable to set DBUS_SESSION_BUS_ADDRESS")
 	}
 	xdgRuntimeDir := fmt.Sprintf("/run/user/%d", userId)
 	err = os.Setenv("XDG_RUNTIME_DIR", xdgRuntimeDir)
 	if err != nil {
-		log.Print("Unable to set XDG_RUNTIME_DIR")
+		logx.Print("Unable to set XDG_RUNTIME_DIR")
 	}
 	err = os.Setenv("DISPLAY", ":0")
 	if err != nil {
-		log.Print("Unable to set DISPLAY")
+		logx.Print("Unable to set DISPLAY")
 	}
 	return err
 }

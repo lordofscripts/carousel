@@ -13,10 +13,10 @@ package carousel
 
 import (
 	"fmt"
-	"log"
 	"strings"
 
 	"github.com/lordofscripts/goapp/app"
+	"github.com/lordofscripts/goapp/app/logx"
 )
 
 /* ----------------------------------------------------------------
@@ -89,7 +89,7 @@ func (s *GnomeSession) WithFlavor(schema string) {
 		s.schemaInterface = orgCinnamonScheme
 
 	default:
-		log.Printf("unknown GnomeSession flavor '%s'", schema)
+		logx.Printf("unknown GnomeSession flavor '%s'", schema)
 	}
 }
 

@@ -11,11 +11,11 @@ package carousel
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"strings"
 
 	"github.com/lordofscripts/goapp/app"
+	"github.com/lordofscripts/goapp/app/logx"
 )
 
 /* ----------------------------------------------------------------
@@ -45,7 +45,7 @@ func init() {
 func GetMountPoint(volumeLabel string) (string, error) {
 	outStr, err := ExecuteProgram(EXT_LSBLK, "-P", "-o", "name,label,mountpoint") // or use -P instead of -l
 	if err != nil {
-		log.Println("error IsDeviceOnline", err)
+		logx.Println("error IsDeviceOnline", err)
 		return "", err
 	}
 
@@ -69,7 +69,7 @@ func IsDeviceOnline(vendorId, productId string) (bool, error) {
 	devId := vendorId + ":" + productId
 	outStr, err := ExecuteProgram(EXT_LSUSB, "-d", devId)
 	if err != nil {
-		log.Println("error IsDeviceOnline", err)
+		logx.Println("error IsDeviceOnline", err)
 		return false, err
 	}
 

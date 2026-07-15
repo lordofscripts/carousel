@@ -11,7 +11,6 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"log"
 	"os"
 	"path"
 	"sort"
@@ -23,14 +22,17 @@ import (
 	"github.com/adhocore/gronx"
 	"github.com/lordofscripts/goapp"
 	"github.com/lordofscripts/goapp/app"
+	"github.com/lordofscripts/goapp/app/logx"
 )
 
 /* ----------------------------------------------------------------
  *						G l o b a l s
  *-----------------------------------------------------------------*/
 const (
-	CONFIG_GROUP  string = "coralys"
-	SETTINGS_FILE string = "goCarousel.json"
+	APP_NAME       string = "carousel"
+	CONFIG_GROUP   string = "coralys"
+	SETTINGS_FILE  string = "goCarousel.json"
+	CALL_TREE_FILE string = "goCarousel_calltree.log"
 )
 
 /* ----------------------------------------------------------------
@@ -48,6 +50,12 @@ const (
 /* ----------------------------------------------------------------
  *				I n i t i a l i z e r
  *-----------------------------------------------------------------*/
+
+func init() {
+	logx.SingLogGate = logx.GetLogGateInstance(APP_NAME, CONFIG_GROUP)
+	logx.SingLogGate.WithConfigSubdirectory(CONFIG_GROUP).SetAppName(APP_NAME).LoadFilters()
+	//logx.SingLogGate.WithCallTree(CALL_TREE_FILE)
+}
 
 /* ----------------------------------------------------------------
  *				C o n s t r u c t o r s
@@ -74,11 +82,13 @@ const (
 func getConfigPath(checkExists bool) string {
 	cfgDir, err := os.UserConfigDir()
 	if err != nil {
+		logx.AttentionAlways("config", err)
 		app.DieWithError(err, 20)
 	}
 
 	cfgDir = path.Join(cfgDir, CONFIG_GROUP)
 	if checkExists && !app.DirExists(cfgDir) {
+		logx.AttentionAlways("config", err)
 		app.DieWithError(carousel.NewAppErrorMsg(carousel.ErrNoConfigurationDir, "config dir").At("main"), 21)
 	}
 
@@ -191,13 +201,13 @@ func CronTask(settings *carousel.Settings, tellNext bool) error {
 			if gron.IsValid(job.CronTab) {
 				due, err := gron.IsDue(job.CronTab, time.Now())
 				if err != nil {
-					log.Printf("job #%d '%s' due error: %s", idx+1, job.Title, err)
+					logx.Printf("job #%d '%s' due error: %s", idx+1, job.Title, err)
 				} else if due {
 					if err := carousel.Execute(job.Command, job.Argument, settings); err != nil {
-						log.Printf("job #%d '%s' exec error: %s", idx+1, job.Title, err)
+						logx.Printf("job #%d '%s' exec error: %s", idx+1, job.Title, err)
 						return err
 					} else {
-						log.Printf("Success running %s", job.Title)
+						logx.Printf("Success running %s", job.Title)
 						anyTaskDue = true
 					}
 				}
@@ -227,7 +237,7 @@ func CronTask(settings *carousel.Settings, tellNext bool) error {
 		}
 
 		if !anyTaskDue {
-			log.Print("No Carousel tasks due")
+			logx.Print("No Carousel tasks due")
 		}
 	}
 
@@ -276,7 +286,6 @@ func Help() {
  *-----------------------------------------------------------------*/
 
 func main() {
-	fmt.Println("GO-GnomeChangeBackground")
 
 	// ============= CLI FLAGS ===============
 	var actInit, actHelp, actVersion, actAnyGlobal, actLock, actUnlock, actStatus, actDefault, actVerify, actWhoAmI bool
@@ -326,15 +335,15 @@ func main() {
 		LOG_FILENAME := path.Join(app.GetUserTempDir(), "goCarousel.log")
 		logFile, err = os.OpenFile(LOG_FILENAME, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 		if err != nil {
-			log.Print(err)
+			logx.Print(err)
 		}
 
-		log.SetOutput(logFile)
-		log.Printf("goCarousel Started from CRON: %t", isCron)
+		logx.SetOutput(logFile)
+		logx.Printf("goCarousel Started from CRON: %t", isCron)
 	}
 	defer func() {
 		if logFile != nil {
-			log.Println("... Closing ...")
+			logx.Println("... Closing ...")
 			logFile.Close()
 		}
 	}()
@@ -447,10 +456,12 @@ func main() {
 		action = carousel.ActIdentify
 	}
 
-	err = carousel.Execute(action, argument, settings)
-	log.Printf("exec %s %s returns %v", action, argument, err)
-	if err != nil {
+	if err = carousel.Execute(action, argument, settings); err == nil {
+		logx.Printf("exec %s %s OK", action, argument)
+	} else {
+		logx.Printf("exec %s %s returns %v", action, argument, err)
 		app.DieWithError(err, 6)
 	}
-	log.Print("...done")
+
+	logx.Print("Bye...")
 }

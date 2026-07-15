@@ -55,20 +55,12 @@ var (
 
 var (
 	// NOTE: Change these values accordingly
-	ModuleVersion app.PackageVersion = app.NewReleaseCandidateVersion(NAME, _DESC, MANUAL_VERSION, 1)
+	ModuleVersion app.PackageVersion = app.NewReleaseCandidateVersion(NAME, _DESC, MANUAL_VERSION, 2)
 )
 
 /* ----------------------------------------------------------------
  *							T y p e s
  *-----------------------------------------------------------------*/
-type status = string
-
-type version struct {
-	n  string // name
-	v  string // version tag
-	s  status // status
-	sv int    // Alpha/Beta/RC-### sequence
-}
 
 /* ----------------------------------------------------------------
  *							M e t h o d s

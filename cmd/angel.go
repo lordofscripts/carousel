@@ -10,10 +10,10 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/lordofscripts/carousel"
+	"github.com/lordofscripts/goapp/app/logx"
 
 	"github.com/adhocore/gronx/pkg/tasker"
 )
@@ -40,9 +40,9 @@ const (
  *-----------------------------------------------------------------*/
 
 func CarouselTasker(settings *carousel.Settings, runUntilMinutes int) {
-	log.Println("Angel battering wings in wallpaper heaven...")
+	logx.Println("Angel battering wings in wallpaper heaven...")
 	carousel.ExecuteCommand(settings.AngelOptions.FirstAction, settings)
-	log.Print("Executed Angel.FirstAction")
+	logx.Print("Executed Angel.FirstAction")
 
 	taskr := tasker.New(tasker.Option{
 		Verbose: DAEMON_VERBOSE,
@@ -57,6 +57,7 @@ func CarouselTasker(settings *carousel.Settings, runUntilMinutes int) {
 
 	for jid, job := range settings.Schedules {
 		taskr.Task(job.CronTab, func(ctx context.Context) (int, error) {
+			logx.Printf("running Job #%d %s", jid+1, job.Title)
 			taskr.Log.Printf("running Job #%d %s", jid+1, job.Title)
 
 			err := carousel.Execute(job.Command, job.Argument, settings)
@@ -73,7 +74,7 @@ func CarouselTasker(settings *carousel.Settings, runUntilMinutes int) {
 	taskr.Run()
 
 	carousel.ExecuteCommand(settings.AngelOptions.LastAction, settings)
-	log.Print("Executed Angel.LastAction")
+	logx.Print("Executed Angel.LastAction")
 
 	fmt.Println("Angels says goodbye...")
 }

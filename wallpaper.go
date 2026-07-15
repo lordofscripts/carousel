@@ -11,11 +11,12 @@ import (
 	"crypto/rand"
 	_ "embed"
 	"fmt"
-	"log"
 	"math/big"
 	"os"
 	"path"
 	"strings"
+
+	"github.com/lordofscripts/goapp/app/logx"
 )
 
 /* ----------------------------------------------------------------
@@ -98,6 +99,7 @@ type WallpaperManager struct {
  * session manager in order to know how to set wallpapers.
  */
 func NewWallpaperMgr(settings *Settings) *WallpaperManager {
+	logx.Ctor()
 	return &WallpaperManager{settings: settings, sessionHandler: nil}
 }
 
@@ -148,7 +150,7 @@ func (w *WallpaperManager) SetWallpaperFromCategory(chosenCategory string) error
 		if category.Protected {
 			preAuthorized = w.authorize(category.KeyName)
 			if !preAuthorized {
-				log.Printf("authorization denied on %s", category.KeyName)
+				logx.Printf("authorization denied on %s", category.KeyName)
 				if w.settings.UserOptions.Notify {
 					NotifySound()
 					NotifyAlertWithData("Authorization denied", altDefaultIconData)
@@ -169,7 +171,7 @@ func (w *WallpaperManager) SetWallpaperFromCategory(chosenCategory string) error
 				if w.settings.UserOptions.Notify {
 					NotifyDesktop(message, iconFile)
 				} else {
-					log.Print(message)
+					logx.Print(message)
 				}
 
 				return nil
@@ -219,7 +221,7 @@ func (w *WallpaperManager) authorize(deviceName string) bool {
 		// vendorId:productId volumeLabel MD5
 		deviceParts := strings.Split(deviceComposite, " ")
 		if len(deviceParts) != KEY_PART_COUNT {
-			log.Printf("bad device-spec '%s' must be 'vendorId:productId volumeLabel'", deviceComposite)
+			logx.Printf("bad device-spec '%s' must be 'vendorId:productId volumeLabel'", deviceComposite)
 			return false
 		}
 
@@ -227,7 +229,7 @@ func (w *WallpaperManager) authorize(deviceName string) bool {
 		// @todo what to do with vendorId:productId ?
 		mountPoint, err := GetMountPoint(deviceParts[KEY_PART_LABEL])
 		if err == nil {
-			log.Printf("device %s mounted on %s", deviceParts[KEY_PART_LABEL], mountPoint)
+			logx.Printf("device %s mounted on %s", deviceParts[KEY_PART_LABEL], mountPoint)
 
 			// (c) Auth File must be in place
 			authFilename := path.Join(mountPoint, DEFAULT_AUTH_FILE)
@@ -239,13 +241,13 @@ func (w *WallpaperManager) authorize(deviceName string) bool {
 					}
 				}
 			} else {
-				log.Printf("key object for %s not found", deviceParts[KEY_PART_LABEL])
+				logx.Printf("key object for %s not found", deviceParts[KEY_PART_LABEL])
 			}
 		} else {
-			log.Printf("key carrier '%s' not plugged in %s", deviceParts[KEY_PART_IDENT], err)
+			logx.Printf("key carrier '%s' not plugged in %s", deviceParts[KEY_PART_IDENT], err)
 		}
 	} else {
-		log.Printf("missing key %s", deviceName)
+		logx.Printf("missing key %s", deviceName)
 	}
 
 	return false
@@ -257,7 +259,7 @@ func (w *WallpaperManager) authorize(deviceName string) bool {
 func (w *WallpaperManager) getRandom(upperLimit int) int64 {
 	randomInt, err := rand.Int(rand.Reader, big.NewInt(int64(upperLimit)))
 	if err != nil {
-		log.Println("Error:", err)
+		logx.Println("Error:", err)
 		return -1
 	}
 
@@ -292,7 +294,7 @@ func (w *WallpaperManager) pickRandomFileIn(dir string) (string, error) {
 
 	// Check if there are any files to choose from
 	if len(regularFiles) == 0 {
-		log.Println("No files found in the directory.")
+		logx.Println("No files found in the directory.")
 		return "", NewAppErrorf(ErrNoQualifyingWallpaper, "no qualifying wallpaper files").At("carousel")
 	}
 

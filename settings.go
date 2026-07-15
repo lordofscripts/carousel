@@ -8,7 +8,7 @@
 package carousel
 
 import (
-	"log"
+	"github.com/lordofscripts/goapp/app/logx"
 
 	"github.com/adhocore/gronx"
 )
@@ -97,7 +97,7 @@ func NewCategoryCollection(categories ...string) CategoryCollection {
 
 func NewSchedule(title, cron string, action Action, arg string) *Schedule {
 	if !gronx.IsValid(cron) {
-		log.Println("ERR-Crontab ", cron)
+		logx.Println("ERR-Crontab ", cron)
 		return nil
 	}
 
